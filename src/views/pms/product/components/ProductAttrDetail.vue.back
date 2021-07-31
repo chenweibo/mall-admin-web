@@ -1,6 +1,6 @@
 <template>
   <div style="margin-top: 50px">
-    <el-form ref="productAttrForm" :model="value" label-width="120px" size="small">
+    <el-form ref="productAttrForm" :model="value" label-width="120px" style="" size="small">
       <el-form-item label="属性类型：">
         <el-select
           v-model="value.productAttributeCategoryId"
@@ -25,6 +25,7 @@
                 :key="item"
                 :label="item"
                 class="littleMarginLeft"
+                @change="checkboxClick"
               />
             </el-checkbox-group>
             <div v-else>
@@ -70,15 +71,6 @@
             </template>
           </el-table-column>
           <el-table-column
-            label="sku图片"
-            width="100"
-            align="center"
-          >
-            <template slot-scope="scope">
-              <SkuUpload :url.sync="scope.row.pic" />
-            </template>
-          </el-table-column>
-          <el-table-column
             label="商品库存"
             width="80"
             align="center"
@@ -87,6 +79,7 @@
               <el-input v-model="scope.row.stock" />
             </template>
           </el-table-column>
+
           <el-table-column
             label="库存预警值"
             width="80"
@@ -137,8 +130,9 @@
         >同步库存
         </el-button>
       </el-form-item>
-      <!-- <el-form-item v-if="hasAttrPic" label="属性图片：">
+      <el-form-item v-if="hasAttrPic" label="属性图片：">
         <el-card shadow="never" class="cardBg">
+          233
           <div v-for="(item,index) in selectProductAttrPics" :key="index">
             <span>{{ item.name }}:</span>
             <single-upload
@@ -147,17 +141,18 @@
             />
           </div>
         </el-card>
-      </el-form-item> -->
+      </el-form-item>
       <el-form-item label="商品参数：">
         <el-card shadow="never" class="cardBg">
           <div v-for="(item,index) in selectProductParam" :key="index" :class="{littleMarginTop:index!==0}">
             <div class="paramInputLabel">{{ item.name }}:</div>
             <el-select v-if="item.inputType===1" v-model="selectProductParam[index].value" class="paramInput">
               <el-option
-                v-for="i in getParamInputList(item.inputList)"
-                :key="i"
-                :label="i"
-                :value="i"
+
+                v-for="(item1) in getParamInputList(item.inputList)"
+                :key="item1"
+                :label="item1"
+                :value="item1"
               />
             </el-select>
             <el-input v-else v-model="selectProductParam[index].value" class="paramInput" />
@@ -170,10 +165,10 @@
       <el-form-item label="规格参数：">
         <el-tabs v-model="activeHtmlName" type="card">
           <el-tab-pane label="电脑端详情" name="pc">
-            <tinymce v-model="value.detailHtml" :width="900" :height="300" />
+            <tinymce v-model="value.detailHtml" :width="1080" :height="500" />
           </el-tab-pane>
           <el-tab-pane label="移动端详情" name="mobile">
-            <tinymce v-model="value.detailMobileHtml" :width="900" :height="300" />
+            <tinymce v-model="value.detailMobileHtml" :width="1080" :height="500" />
           </el-tab-pane>
         </el-tabs>
       </el-form-item>
@@ -188,15 +183,13 @@
 <script>
 import { fetchList as fetchProductAttrCateList } from '@/api/productAttrCate'
 import { fetchList as fetchProductAttrList } from '@/api/productAttr'
-
-// import SingleUpload from '@/components/Upload/singleUpload'
+import SingleUpload from '@/components/Upload/singleUpload'
 import MultiUpload from '@/components/Upload/multiUpload'
-import SkuUpload from '@/components/Upload/skuUpload'
 import Tinymce from '@/components/Tinymce'
 
 export default {
   name: 'ProductAttrDetail',
-  components: { MultiUpload, Tinymce, SkuUpload },
+  components: { MultiUpload, Tinymce, SingleUpload },
   props: {
     value: {
       type: Object,
@@ -285,8 +278,18 @@ export default {
   },
   created() {
     this.getProductAttrCateList()
+    // console.log(this.value)
   },
   methods: {
+    checkboxClick(v) {
+      // this.refreshProductAttrPics()
+      this.refreshProductSkuList()
+      // this.refreshProductSku()
+    },
+    refreshProductSku() {
+      // console.log(this.selectProductAttr)
+    },
+
     handleEditCreated() {
       // 根据商品属性分类id获取属性和参数
       if (this.value.productAttributeCategoryId != null) {
@@ -493,6 +496,63 @@ export default {
         }
       })
     },
+    handleStrr(data) {
+      const c = Object.keys(data).reduce((result, key) => {
+        // 循环属性的每一个值
+        return data[key].reduce((acc, value) => {
+          // 对于第一个属性
+          if (!result.length) {
+            // 将数值转化为对象格式
+            return acc.concat({ [key]: value })
+          }
+          // 对于第一个之后的属性，将新的属性和值添加到已有结果，并进行拼接。
+          return acc.concat(result.map(ele => (Object.assign({}, ele, { [key]: value }))))
+        }, [])
+      }, [])
+
+      const result = []
+
+      c.forEach(element => {
+        const z = []
+        this._.forEach(element, function(v, k) {
+          z.push({ key: k, value: v })
+        })
+
+        result.push({
+          spData: JSON.stringify(z)
+        })
+      })
+
+      return result
+    },
+    // refreshProductSkuList() {
+    //   // this.value.skuStockList = []
+    //   // const skuList = this.value.skuStockList
+    //   // const objDate = {}
+    //   // this.selectProductAttr.forEach(item => {
+    //   //   if (item.values.length > 0) {
+    //   //     objDate[item.name] = item.values
+    //   //   }
+    //   // })
+    //   // // 只有一个属性时
+    //   // if (this.selectProductAttr.length === 1) {
+    //   //   const attr = this.selectProductAttr[0]
+    //   //   for (let i = 0; i < attr.values.length; i++) {
+    //   //     skuList.push({
+    //   //       lockStock: null,
+    //   //       pic: null,
+    //   //       price: null,
+    //   //       promotionPrice: null,
+    //   //       sale: null,
+    //   //       skuCode: null,
+    //   //       spData: JSON.stringify([{ key: attr.name, value: attr.values[i], pic: '' }]),
+    //   //       stock: 9999
+    //   //     })
+    //   //   }
+    //   // } else {
+    //   //   this.value.skuStockList = this.handleStrr(objDate)
+    //   // }
+    // },
     refreshProductSkuList() {
       this.value.skuStockList = []
       const skuList = this.value.skuStockList
@@ -561,6 +621,7 @@ export default {
       this.selectProductAttrPics = []
       if (this.selectProductAttr.length >= 1) {
         const values = this.selectProductAttr[0].values
+        // console.log(values)
         for (let i = 0; i < values.length; i++) {
           let pic = null
           if (this.isEdit) {
@@ -602,16 +663,16 @@ export default {
       }
     },
     // 合并商品属性图片
-    // mergeProductAttrPics() {
-    //   for (let i = 0; i < this.selectProductAttrPics.length; i++) {
-    //     for (let j = 0; j < this.value.skuStockList.length; j++) {
-    //       const spData = JSON.parse(this.value.skuStockList[j].spData)
-    //       if (spData[0].value === this.selectProductAttrPics[i].name) {
-    //         this.value.skuStockList[j].pic = this.selectProductAttrPics[i].pic
-    //       }
-    //     }
-    //   }
-    // },
+    mergeProductAttrPics() {
+      for (let i = 0; i < this.selectProductAttrPics.length; i++) {
+        for (let j = 0; j < this.value.skuStockList.length; j++) {
+          const spData = JSON.parse(this.value.skuStockList[j].spData)
+          if (spData[0].value === this.selectProductAttrPics[i].name) {
+            this.value.skuStockList[j].pic = this.selectProductAttrPics[i].pic
+          }
+        }
+      }
+    },
     getOptionStr(arr) {
       let str = ''
       for (let i = 0; i < arr.length; i++) {
@@ -638,7 +699,7 @@ export default {
     },
     handleNext() {
       this.mergeProductAttrValue()
-      // this.mergeProductAttrPics()
+      this.mergeProductAttrPics()
       this.$emit('nextStep')
     }
   }
@@ -667,5 +728,11 @@ export default {
 
   .cardBg {
     background: #F8F9FC;
+  }
+  .x{
+    width: 60px;
+    display: flex;
+     align-items:center;
+   justify-content:center;
   }
 </style>

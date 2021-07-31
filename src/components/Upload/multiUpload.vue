@@ -35,7 +35,7 @@ export default {
     // 最大上传图片数量
     maxCount: {
       type: Number,
-      default: 5
+      default: 10
     }
   },
   data() {
@@ -52,7 +52,7 @@ export default {
       dialogImageUrl: null,
       useOss: false, // 使用oss->true;使用MinIO->false
       ossUploadUrl: 'http://macro-oss.oss-cn-shenzhen.aliyuncs.com',
-      minioUploadUrl: process.env.NODE_ENV === 'development' ? 'http://127.0.0.1:8080/minio/upload' : '/minio/upload'
+      minioUploadUrl: process.env.NODE_ENV === 'development' ? 'http://127.0.0.1:8080/minio/upload' : process.env.VUE_APP_BASE_API + 'minio/upload'
     }
   },
   computed: {

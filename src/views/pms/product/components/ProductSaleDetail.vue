@@ -1,6 +1,6 @@
 <template>
   <div style="margin-top: 50px">
-    <el-form ref="productSaleForm" :model="value" label-width="120px" style="width: 600px" size="small">
+    <el-form ref="productSaleForm" :model="value" label-width="120px" style="" size="small">
       <el-form-item label="赠送积分：">
         <el-input v-model="value.giftPoint" />
       </el-form-item>
@@ -113,9 +113,9 @@
             </template>
           </el-table-column>
           <el-table-column
-            label="折扣"
+            label="折扣(输入0.5为5折以此类推)"
             align="center"
-            width="120"
+            width="200"
           >
             <template slot-scope="scope">
               <el-input v-model="scope.row.discount" />

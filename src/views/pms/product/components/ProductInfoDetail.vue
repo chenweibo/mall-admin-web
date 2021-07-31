@@ -1,6 +1,6 @@
 <template>
-  <div style="margin-top: 50px">
-    <el-form ref="productInfoForm" :model="value" :rules="rules" label-width="120px" style="width: 600px" size="small">
+  <div style="margin:50px auto;">
+    <el-form ref="productInfoForm" :model="value" :rules="rules" label-width="120px" style="" size="small">
       <el-form-item label="商品分类：" prop="productCategoryId">
         <el-cascader
           v-model="selectProductCateValue"

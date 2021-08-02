@@ -45,7 +45,7 @@ export default {
       dialogVisible: false,
       useOss: false, // 使用oss->true;使用MinIO->false
       ossUploadUrl: 'http://macro-oss.oss-cn-shenzhen.aliyuncs.com',
-      minioUploadUrl: process.env.NODE_ENV === 'development' ? 'http://127.0.0.1:8080/minio/upload' : '/minio/upload'
+      minioUploadUrl: process.env.NODE_ENV === 'development' ? 'http://127.0.0.1:8080/minio/upload' : process.env.VUE_APP_BASE_API + 'minio/upload'
     }
   },
   computed: {

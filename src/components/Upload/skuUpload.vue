@@ -34,6 +34,15 @@ export default {
       minioUploadUrl: process.env.NODE_ENV === 'development' ? 'http://127.0.0.1:8080/minio/upload' : process.env.VUE_APP_BASE_API + '/minio/upload'
     }
   },
+  watch: {
+    url: {
+      handler(newValue, oldValue) {
+        this.img = newValue
+        this.srcList = [newValue]
+      },
+      deep: true // 深度监听父组件传过来对象变化
+    }
+  },
   methods: {
     selectNewPhoto() {
       this.$refs.photo.click()

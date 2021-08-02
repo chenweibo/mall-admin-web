@@ -25,6 +25,7 @@
                 :key="item"
                 :label="item"
                 class="littleMarginLeft"
+                @change="checkboxClick"
               />
             </el-checkbox-group>
             <div v-else>
@@ -34,13 +35,14 @@
                   :key="index"
                   style="display: inline-block"
                   class="littleMarginLeft"
+                  @change="checkboxClick"
                 >
                   <el-checkbox :key="item" :label="item" />
                   <el-button type="text" class="littleMarginLeft" @click="handleRemoveProductAttrValue(idx,index)">删除
                   </el-button>
                 </div>
               </el-checkbox-group>
-              <el-input v-model="addProductAttrValue" style="width: 160px;margin-left: 10px" clearable />
+              <el-input v-model="selectinput[idx]" style="width: 160px;margin-left: 10px" clearable />
               <el-button class="littleMarginLeft" @click="handleAddProductAttrValue(idx)">增加</el-button>
             </div>
           </div>
@@ -193,6 +195,7 @@ import { fetchList as fetchProductAttrList } from '@/api/productAttr'
 import MultiUpload from '@/components/Upload/multiUpload'
 import SkuUpload from '@/components/Upload/skuUpload'
 import Tinymce from '@/components/Tinymce'
+import _ from 'lodash'
 
 export default {
   name: 'ProductAttrDetail',
@@ -224,7 +227,8 @@ export default {
       // 可手动添加的商品属性
       addProductAttrValue: '',
       // 商品富文本详情激活类型
-      activeHtmlName: 'pc'
+      activeHtmlName: 'pc',
+      selectinput: undefined
     }
   },
   computed: {
@@ -235,6 +239,11 @@ export default {
       }
       return true
     },
+    // selectinput() {
+    //   const count = this.selectProductAttr.length
+    //   return Array.from({ length: this.selectProductAttr.length }, (v, k) => '')
+    // },
+
     // 商品的编号
     productId() {
       return this.value.id
@@ -287,6 +296,11 @@ export default {
     this.getProductAttrCateList()
   },
   methods: {
+    checkboxClick(v) {
+      // this.refreshProductAttrPics()
+      this.refreshProductSkuList()
+      // this.refreshProductSku()
+    },
     handleEditCreated() {
       // 根据商品属性分类id获取属性和参数
       if (this.value.productAttributeCategoryId != null) {
@@ -308,6 +322,8 @@ export default {
       const param = { pageNum: 1, pageSize: 100, type: type }
       fetchProductAttrList(cid, param).then(response => {
         const list = response.data.list
+        this.selectinput = Array.from({ length: list.length }, (v, k) => '')
+        //  console.log(this.selectinput)
         if (type === 0) {
           this.selectProductAttr = []
           for (let i = 0; i < list.length; i++) {
@@ -414,8 +430,9 @@ export default {
       return inputList.split(',')
     },
     handleAddProductAttrValue(idx) {
+      // console.log(idx)
       const options = this.selectProductAttr[idx].options
-      if (this.addProductAttrValue == null || this.addProductAttrValue === '') {
+      if (this.selectinput[idx] == null || this.selectinput[idx] === '') {
         this.$message({
           message: '属性值不能为空',
           type: 'warning',
@@ -423,7 +440,7 @@ export default {
         })
         return
       }
-      if (options.indexOf(this.addProductAttrValue) !== -1) {
+      if (options.indexOf(this.selectinput[idx]) !== -1) {
         this.$message({
           message: '属性值不能重复',
           type: 'warning',
@@ -431,8 +448,8 @@ export default {
         })
         return
       }
-      this.selectProductAttr[idx].options.push(this.addProductAttrValue)
-      this.addProductAttrValue = null
+      this.selectProductAttr[idx].options.push(this.selectinput[idx])
+      this.selectinput[idx] = null
     },
     handleRemoveProductAttrValue(idx, index) {
       this.selectProductAttr[idx].options.splice(index, 1)
@@ -451,7 +468,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.refreshProductAttrPics()
+        // this.refreshProductAttrPics()
         this.refreshProductSkuList()
       })
     },
@@ -493,69 +510,78 @@ export default {
         }
       })
     },
+
     refreshProductSkuList() {
+      // 深拷贝保存旧数据
+      const old = JSON.parse(JSON.stringify(this.value.skuStockList))
       this.value.skuStockList = []
       const skuList = this.value.skuStockList
+
+      const objDate = {}
+      this.selectProductAttr.forEach(item => {
+        if (item.values.length > 0) {
+          objDate[item.name] = item.values
+        }
+      })
       // 只有一个属性时
       if (this.selectProductAttr.length === 1) {
         const attr = this.selectProductAttr[0]
         for (let i = 0; i < attr.values.length; i++) {
-          skuList.push({
-            spData: JSON.stringify([{ key: attr.name, value: attr.values[i] }])
-          })
-        }
-      } else if (this.selectProductAttr.length === 2) {
-        const attr0 = this.selectProductAttr[0]
-        const attr1 = this.selectProductAttr[1]
-        for (let i = 0; i < attr0.values.length; i++) {
-          if (attr1.values.length === 0) {
-            skuList.push({
-              spData: JSON.stringify([{ key: attr0.name, value: attr0.values[i] }])
-            })
-            continue
-          }
-          for (let j = 0; j < attr1.values.length; j++) {
-            const spData = []
-            spData.push({ key: attr0.name, value: attr0.values[i] })
-            spData.push({ key: attr1.name, value: attr1.values[j] })
-            skuList.push({
-              spData: JSON.stringify(spData)
-            })
-          }
+          skuList.push(this.mergeOldSku([{ key: attr.name, value: attr.values[i] }], old))
         }
       } else {
-        const attr0 = this.selectProductAttr[0]
-        const attr1 = this.selectProductAttr[1]
-        const attr2 = this.selectProductAttr[2]
-        for (let i = 0; i < attr0.values.length; i++) {
-          if (attr1.values.length === 0) {
-            skuList.push({
-              spData: JSON.stringify([{ key: attr0.name, value: attr0.values[i] }])
-            })
-            continue
-          }
-          for (let j = 0; j < attr1.values.length; j++) {
-            if (attr2.values.length === 0) {
-              const spData = []
-              spData.push({ key: attr0.name, value: attr0.values[i] })
-              spData.push({ key: attr1.name, value: attr1.values[j] })
-              skuList.push({
-                spData: JSON.stringify(spData)
-              })
-              continue
-            }
-            for (let k = 0; k < attr2.values.length; k++) {
-              const spData = []
-              spData.push({ key: attr0.name, value: attr0.values[i] })
-              spData.push({ key: attr1.name, value: attr1.values[j] })
-              spData.push({ key: attr2.name, value: attr2.values[k] })
-              skuList.push({
-                spData: JSON.stringify(spData)
-              })
-            }
-          }
+        this.value.skuStockList = this.handleStrr(objDate, old)
+      }
+    },
+    mergeOldSku(data, old) {
+      const r = _.filter(old, function(o) {
+        if (_.isEqual(data, JSON.parse(o.spData))) {
+          return o
+        }
+      })
+      if (r.length > 0) {
+        return r[0]
+      } else {
+        return {
+          lockStock: null,
+          pic: null,
+          price: null,
+          promotionPrice: null,
+          sale: null,
+          skuCode: null,
+          stock: 99999,
+          spData: JSON.stringify(data)
         }
       }
+    },
+    handleStrr(data, old) {
+      const c = Object.keys(data).reduce((result, key) => {
+        // 循环属性的每一个值
+        return data[key].reduce((acc, value) => {
+          // 对于第一个属性
+          if (!result.length) {
+            // 将数值转化为对象格式
+            return acc.concat({ [key]: value })
+          }
+          // 对于第一个之后的属性，将新的属性和值添加到已有结果，并进行拼接。
+          return acc.concat(result.map(ele => (Object.assign({}, ele, { [key]: value }))))
+        }, [])
+      }, [])
+
+      const result = []
+      // console.log(old)
+
+      c.forEach(element => {
+        const z = []
+        this._.forEach(element, function(v, k) {
+          z.push({ key: k, value: v })
+        })
+
+        this.mergeOldSku(z, old)
+        result.push(this.mergeOldSku(z, old))
+      })
+
+      return result
     },
     refreshProductAttrPics() {
       this.selectProductAttrPics = []

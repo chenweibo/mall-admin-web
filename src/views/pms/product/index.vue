@@ -139,6 +139,9 @@
         <el-table-column label="排序" width="100" align="center">
           <template slot-scope="scope">{{ scope.row.sort }}</template>
         </el-table-column>
+        <el-table-column label="创建者" width="100" align="center">
+          <template slot-scope="scope">{{ scope.row.createName }}</template>
+        </el-table-column>
         <el-table-column label="SKU库存" width="100" align="center">
           <template slot-scope="scope">
             <el-button type="primary" icon="el-icon-edit" circle @click="handleShowSkuEditDialog(scope.$index, scope.row)" />

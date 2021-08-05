@@ -38,6 +38,8 @@
                   @change="checkboxClick"
                 >
                   <el-checkbox :key="item" :label="item" />
+                  <el-button type="text" class="littleMarginLeft" @click="handleEditProductAttrValue(idx,index)">编辑
+                  </el-button>
                   <el-button type="text" class="littleMarginLeft" @click="handleRemoveProductAttrValue(idx,index)">删除
                   </el-button>
                 </div>
@@ -375,11 +377,15 @@ export default {
       for (let i = 0; i < this.value.productAttributeValueList.length; i++) {
         const attrValue = this.value.productAttributeValueList[i]
         if (attrValue.productAttributeId === id) {
-          const strArr = attrValue.value.split(',')
-          for (let j = 0; j < strArr.length; j++) {
-            options.push(strArr[j])
+          // console.log(attrValue.value)
+          // console.log(attrValue.value)
+          if (attrValue.value) {
+            const strArr = attrValue.value.split(',')
+            for (let j = 0; j < strArr.length; j++) {
+              options.push(strArr[j])
+            }
+            break
           }
-          break
         }
       }
       return options
@@ -453,6 +459,50 @@ export default {
     },
     handleRemoveProductAttrValue(idx, index) {
       this.selectProductAttr[idx].options.splice(index, 1)
+    },
+    handleEditProductAttrValue(idx, index) {
+      const old = JSON.parse(JSON.stringify(this.selectProductAttr[idx].options))
+      const oncheck = JSON.parse(JSON.stringify(this.selectProductAttr[idx].values))
+      const type = JSON.parse(JSON.stringify(this.selectProductAttr[idx].name))
+      const v = JSON.parse(JSON.stringify(this.selectProductAttr[idx].options[index]))
+      const oncheckIndex = oncheck.indexOf(v)
+
+      this.$prompt('请输入内容', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        inputPattern: /\S/,
+        inputErrorMessage: '内容不能为空'
+      }).then(({ value }) => {
+        old.splice(index, 1, value)
+        this.selectProductAttr[idx].options = old
+        // 处理选中状态的数值变更
+        if (oncheckIndex !== -1) {
+          oncheck.splice(oncheckIndex, 1, value)
+          this.selectProductAttr[idx].values = oncheck
+        }
+        // this.selectProductAttr[idx].values = oncheck
+        this.editSkuList(v, value, type)
+      }).catch(() => {
+
+      })
+    },
+    editSkuList(old, now, type) {
+      // 深拷贝保存旧数据
+      const skulist = JSON.parse(JSON.stringify(this.value.skuStockList))
+      const check = { key: type, value: old }
+      skulist.forEach(item => {
+        const arr = JSON.parse(item.spData)
+        const index = _.findIndex(arr, check)
+        if (index !== -1) {
+          arr.splice(index, 1, { key: type, value: now })
+          item.spData = JSON.stringify(arr)
+        }
+        this.value.skuStockList = skulist
+        // if (_.find(JSON.parse(item.spData), check) !== undefined) {
+        //   console.log(_.find(JSON.parse(item.spData), check))
+        // }
+      })
+      // console.log(old, now, type)
     },
     getProductSkuSp(row, index) {
       const spData = JSON.parse(row.spData)

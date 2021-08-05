@@ -57,7 +57,7 @@ export default {
           this.$emit('update:url', response.data.url)
           this.img = response.data.url
           this.srcList = [response.data.url]
-          console.log(response.data)
+          // console.log(response.data)
         })
     }
 

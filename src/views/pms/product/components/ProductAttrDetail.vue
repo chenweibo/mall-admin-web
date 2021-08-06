@@ -30,19 +30,24 @@
             </el-checkbox-group>
             <div v-else>
               <el-checkbox-group v-model="selectProductAttr[idx].values">
-                <div
-                  v-for="(item,index) in selectProductAttr[idx].options"
-                  :key="index"
-                  style="display: inline-block"
-                  class="littleMarginLeft"
-                  @change="checkboxClick"
-                >
-                  <el-checkbox :key="item" :label="item" />
-                  <el-button type="text" class="littleMarginLeft" @click="handleEditProductAttrValue(idx,index)">编辑
-                  </el-button>
-                  <el-button type="text" class="littleMarginLeft" @click="handleRemoveProductAttrValue(idx,index)">删除
-                  </el-button>
-                </div>
+                <draggable v-model="selectProductAttr[idx].options">
+                  <transition-group>
+                    <div
+                      v-for="(item,index) in selectProductAttr[idx].options"
+                      :key="index"
+                      style="display: inline-block"
+                      class="littleMarginLeft"
+                      @change="checkboxClick"
+                    >
+                      <el-checkbox :key="item" :label="item" />
+                      <el-button type="text" class="littleMarginLeft" @click="handleEditProductAttrValue(idx,index)">编辑
+                      </el-button>
+                      <el-button type="text" class="littleMarginLeft" @click="handleRemoveProductAttrValue(idx,index)">删除
+                      </el-button>
+                    </div>
+                  </transition-group>
+                </draggable>
+
               </el-checkbox-group>
               <el-input v-model="selectinput[idx]" style="width: 160px;margin-left: 10px" clearable />
               <el-button class="littleMarginLeft" @click="handleAddProductAttrValue(idx)">增加</el-button>
@@ -198,10 +203,11 @@ import MultiUpload from '@/components/Upload/multiUpload'
 import SkuUpload from '@/components/Upload/skuUpload'
 import Tinymce from '@/components/Tinymce'
 import _ from 'lodash'
+import draggable from 'vuedraggable'
 
 export default {
   name: 'ProductAttrDetail',
-  components: { MultiUpload, Tinymce, SkuUpload },
+  components: { MultiUpload, Tinymce, SkuUpload, draggable },
   props: {
     value: {
       type: Object,

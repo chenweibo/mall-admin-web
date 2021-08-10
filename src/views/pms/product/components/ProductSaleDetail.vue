@@ -92,6 +92,7 @@
 
       </el-form-item>
       <el-form-item v-show="value.promotionType===2">
+        <el-tag style="margin-bottom:20px">提示：输入0.2 即为2折 以此类推</el-tag>
         <div v-for="(item, index) in value.memberPriceList" :key="index" :class="{littleMargin:index!==0}">
           {{ item.memberLevelName }}：
           <el-input v-model="item.memberPrice" style="width: 200px" />

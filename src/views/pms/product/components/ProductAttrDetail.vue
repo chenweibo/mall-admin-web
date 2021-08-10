@@ -18,7 +18,7 @@
       <el-form-item label="商品规格：">
         <el-card shadow="never" class="cardBg">
           <div v-for="(productAttr,idx) in selectProductAttr" :key="idx">
-            {{ productAttr.name }}：
+            {{ productAttr.name }}：<el-button type="text" @click="selectAll(idx)">全选</el-button>
             <el-checkbox-group v-if="productAttr.handAddStatus===0" v-model="selectProductAttr[idx].values">
               <el-checkbox
                 v-for="item in getInputListArr(productAttr.inputList)"
@@ -31,21 +31,21 @@
             <div v-else>
               <el-checkbox-group v-model="selectProductAttr[idx].values">
                 <draggable v-model="selectProductAttr[idx].options">
-                  <transition-group>
-                    <div
-                      v-for="(item,index) in selectProductAttr[idx].options"
-                      :key="index"
-                      style="display: inline-block"
-                      class="littleMarginLeft"
-                      @change="checkboxClick"
-                    >
-                      <el-checkbox :key="item" :label="item" />
-                      <el-button type="text" class="littleMarginLeft" @click="handleEditProductAttrValue(idx,index)">编辑
-                      </el-button>
-                      <el-button type="text" class="littleMarginLeft" @click="handleRemoveProductAttrValue(idx,index)">删除
-                      </el-button>
-                    </div>
-                  </transition-group>
+
+                  <div
+                    v-for="(item,index) in selectProductAttr[idx].options"
+                    :key="index"
+                    style="display: inline-block"
+                    class="littleMarginLeft"
+                    @change="checkboxClick"
+                  >
+                    <el-checkbox :key="item" :label="item" />
+                    <el-button type="text" class="littleMarginLeft" @click="handleEditProductAttrValue(idx,index)">编辑
+                    </el-button>
+                    <el-button type="text" class="littleMarginLeft" @click="handleRemoveProductAttrValue(idx,index)">删除
+                    </el-button>
+                  </div>
+
                 </draggable>
 
               </el-checkbox-group>
@@ -304,6 +304,13 @@ export default {
     this.getProductAttrCateList()
   },
   methods: {
+    selectAll(idx) {
+      const val = this.selectProductAttr[idx]
+      this.selectProductAttr[idx].values = val.options
+      this.refreshProductSkuList()
+
+      // console.log(this.selectProductAttr[idx])
+    },
     checkboxClick(v) {
       // this.refreshProductAttrPics()
       this.refreshProductSkuList()

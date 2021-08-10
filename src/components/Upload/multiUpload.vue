@@ -13,15 +13,52 @@
       :on-exceed="handleExceed"
     >
       <i class="el-icon-plus" />
+      <div slot="file" slot-scope="{file}">
+        <img
+          class="el-upload-list__item-thumbnail"
+          :src="file.url"
+          alt=""
+        > <span class="el-upload-list__item-actions">
+          <span
+            class="el-upload-list__item-preview"
+            @click="handlePreview(file)"
+          >
+            <i class="el-icon-zoom-in" />
+          </span>
+          <span
+
+            class="el-upload-list__item-edit"
+            @click="handleEdit(file)"
+          >
+            <i class="el-icon-setting" />
+          </span>
+          <span
+
+            class="el-upload-list__item-delete"
+            @click="handleRemove(file)"
+          >
+            <i class="el-icon-delete" />
+          </span>
+        </span>
+      </div>
     </el-upload>
     <el-dialog :visible.sync="dialogVisible">
       <img width="100%" :src="dialogImageUrl" alt="">
     </el-dialog>
+
+    <!-- Profile Photo File Input -->
+    <input
+      ref="photo"
+      class="hidden"
+      type="file"
+      @change="updatePhotoPreview"
+    >
   </div>
 </template>
 <script>
 import { policy } from '@/api/oss'
-
+import _ from 'lodash'
+import { upload } from '@/api/minio'
 export default {
   name: 'MultiUpload',
   props: {
@@ -48,11 +85,12 @@ export default {
         dir: '',
         host: ''
       },
+      editKey: undefined,
       dialogVisible: false,
       dialogImageUrl: null,
       useOss: false, // 使用oss->true;使用MinIO->false
       ossUploadUrl: 'http://macro-oss.oss-cn-shenzhen.aliyuncs.com',
-      minioUploadUrl: process.env.NODE_ENV === 'development' ? 'http://127.0.0.1:8080/minio/upload' : process.env.VUE_APP_BASE_API + 'minio/upload'
+      minioUploadUrl: process.env.NODE_ENV === 'development' ? 'http://127.0.0.1:8079/minio/upload' : process.env.VUE_APP_BASE_API + 'minio/upload'
     }
   },
   computed: {
@@ -65,15 +103,44 @@ export default {
     }
   },
   methods: {
+    updatePhotoPreview(e) {
+      const forms = new FormData()
+      forms.append('file', this.$refs.photo.files[0])
+      // 添加请求头
+      upload(forms)
+        .then(response => {
+          // this.url = response.data.url
+          this.fileList[this.editKey].url = response.data.url
+          this.emitInput(this.fileList)
+          // this.fileList.splice(index, 1, { key: type, value: now })
+
+          // this.srcList = [response.data.url]
+          // console.log(response.data)
+        })
+    },
     emitInput(fileList) {
       const value = []
+      // console.log(fileList)
       for (let i = 0; i < fileList.length; i++) {
         value.push(fileList[i].url)
       }
       this.$emit('input', value)
     },
+    handleEdit(file) {
+      const index = _.findIndex(this.fileList, file)
+      this.$refs.photo.click()
+      this.editKey = index
+      // console.log(index)
+    },
     handleRemove(file, fileList) {
-      this.emitInput(fileList)
+      const index = _.findIndex(this.fileList, file)
+      if (index !== -1) {
+        // console.log(index)
+        this.fileList.splice(index, 1)
+        this.emitInput(this.fileList)
+      }
+
+      // this.emitInput(file)
     },
     handlePreview(file) {
       this.dialogVisible = true
@@ -119,7 +186,9 @@ export default {
   }
 }
 </script>
-<style>
-
+<style lang="scss" >
+.hidden{
+  display: none
+}
 </style>
 

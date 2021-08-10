@@ -1,12 +1,152 @@
 <template>
-  <div>
-    <!-- <tinymce v-model="a" :width="595" :height="300" /> -->
+  <div class="app-container">
+
+    <div class="total-layout">
+      <el-row :gutter="20">
+        <el-col :span="6">
+          <div class="total-frame">
+            <img :src="img_home_order" class="total-icon">
+            <div class="total-title">今日订单总数</div>
+            <div class="total-value">200</div>
+          </div>
+        </el-col>
+        <el-col :span="6">
+          <div class="total-frame">
+            <img :src="img_home_today_amount" class="total-icon">
+            <div class="total-title">今日销售总额</div>
+            <div class="total-value">￥5000.00</div>
+          </div>
+        </el-col>
+        <el-col :span="6">
+          <div class="total-frame">
+            <img :src="img_home_yesterday_amount" class="total-icon">
+            <div class="total-title">昨日销售总额</div>
+            <div class="total-value">￥5000.00</div>
+          </div>
+        </el-col>
+        <el-col :span="6">
+          <div class="total-frame">
+            <img :src="img_home_yesterday_amount" class="total-icon">
+            <div class="total-title">昨日销售总额</div>
+            <div class="total-value">￥5000.00</div>
+          </div>
+        </el-col>
+
+      </el-row>
+    </div>
+    <div class="un-handle-layout">
+      <div class="layout-title">待处理事务</div>
+      <div class="un-handle-content">
+        <el-row :gutter="20">
+          <el-col :span="8">
+            <div class="un-handle-item">
+              <span class="font-medium">待付款订单</span>
+              <span style="float: right" class="color-danger">(10)</span>
+            </div>
+          </el-col>
+          <el-col :span="8">
+            <div class="un-handle-item">
+              <span class="font-medium">已完成订单</span>
+              <span style="float: right" class="color-danger">(10)</span>
+            </div>
+          </el-col>
+          <el-col :span="8">
+            <div class="un-handle-item">
+              <span class="font-medium">待确认收货订单</span>
+              <span style="float: right" class="color-danger">(10)</span>
+            </div>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="8">
+            <div class="un-handle-item">
+              <span class="font-medium">待发货订单</span>
+              <span style="float: right" class="color-danger">(10)</span>
+            </div>
+          </el-col>
+          <el-col :span="8">
+            <div class="un-handle-item">
+              <span class="font-medium">新缺货登记</span>
+              <span style="float: right" class="color-danger">(10)</span>
+            </div>
+          </el-col>
+          <el-col :span="8">
+            <div class="un-handle-item">
+              <span class="font-medium">待处理退款申请</span>
+              <span style="float: right" class="color-danger">(10)</span>
+            </div>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="8">
+            <div class="un-handle-item">
+              <span class="font-medium">已发货订单</span>
+              <span style="float: right" class="color-danger">(10)</span>
+            </div>
+          </el-col>
+          <el-col :span="8">
+            <div class="un-handle-item">
+              <span class="font-medium">待处理退货订单</span>
+              <span style="float: right" class="color-danger">(10)</span>
+            </div>
+          </el-col>
+          <el-col :span="8">
+            <div class="un-handle-item">
+              <span class="font-medium">广告位即将到期</span>
+              <span style="float: right" class="color-danger">(0)</span>
+            </div>
+          </el-col>
+        </el-row>
+      </div>
+    </div>
+    <div class="overview-layout">
+      <el-row :gutter="20">
+        <el-col :span="12">
+          <div class="out-border">
+            <div class="layout-title">商品总览</div>
+            <div style="padding: 40px">
+              <el-row>
+                <el-col :span="6" class="color-danger overview-item-value">100</el-col>
+                <el-col :span="6" class="color-danger overview-item-value">400</el-col>
+                <el-col :span="6" class="color-danger overview-item-value">50</el-col>
+                <el-col :span="6" class="color-danger overview-item-value">500</el-col>
+              </el-row>
+              <el-row class="font-medium">
+                <el-col :span="6" class="overview-item-title">已下架</el-col>
+                <el-col :span="6" class="overview-item-title">已上架</el-col>
+                <el-col :span="6" class="overview-item-title">库存紧张</el-col>
+                <el-col :span="6" class="overview-item-title">全部商品</el-col>
+              </el-row>
+            </div>
+          </div>
+        </el-col>
+        <el-col :span="12">
+          <div class="out-border">
+            <div class="layout-title">用户总览</div>
+            <div style="padding: 40px">
+              <el-row>
+                <el-col :span="6" class="color-danger overview-item-value">100</el-col>
+                <el-col :span="6" class="color-danger overview-item-value">200</el-col>
+                <el-col :span="6" class="color-danger overview-item-value">1000</el-col>
+                <el-col :span="6" class="color-danger overview-item-value">5000</el-col>
+              </el-row>
+              <el-row class="font-medium">
+                <el-col :span="6" class="overview-item-title">今日新增</el-col>
+                <el-col :span="6" class="overview-item-title">昨日新增</el-col>
+                <el-col :span="6" class="overview-item-title">本月新增</el-col>
+                <el-col :span="6" class="overview-item-title">会员总数</el-col>
+              </el-row>
+            </div>
+          </div>
+        </el-col>
+      </el-row>
+    </div>
+
   </div>
 </template>
 
 <script>
 import { str2Date } from '@/utils/date'
-// import Tinymce from '@/components/Tinymce'
 import img_home_order from '@/assets/images/home_order.png'
 import img_home_today_amount from '@/assets/images/home_today_amount.png'
 import img_home_yesterday_amount from '@/assets/images/home_yesterday_amount.png'
@@ -32,10 +172,8 @@ const DATA_FROM_BACKEND = {
 }
 export default {
   name: 'Home',
-  components: { },
   data() {
     return {
-      a: '',
       pickerOptions: {
         shortcuts: [{
           text: '最近一周',

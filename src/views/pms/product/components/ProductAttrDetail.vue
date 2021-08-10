@@ -24,6 +24,8 @@
                 v-for="item in getInputListArr(productAttr.inputList)"
                 :key="item"
                 :label="item"
+                border
+                size="medium"
                 class="littleMarginLeft"
                 @change="checkboxClick"
               />
@@ -39,7 +41,7 @@
                     class="littleMarginLeft"
                     @change="checkboxClick"
                   >
-                    <el-checkbox :key="item" :label="item" />
+                    <el-checkbox :key="item" :label="item" border size="medium" />
                     <el-button type="text" class="littleMarginLeft" @click="handleEditProductAttrValue(idx,index)">编辑
                     </el-button>
                     <el-button type="text" class="littleMarginLeft" @click="handleRemoveProductAttrValue(idx,index)">删除
@@ -58,6 +60,7 @@
           style="width: 100%;margin-top: 20px"
           :data="value.skuStockList"
           border
+          height="600"
         >
           <el-table-column
             v-for="(item,index) in selectProductAttr"
@@ -737,6 +740,7 @@ export default {
 <style scoped>
   .littleMarginLeft {
     margin-left: 10px;
+    margin-bottom: 5px;
   }
 
   .littleMarginTop {

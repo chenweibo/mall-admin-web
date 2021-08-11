@@ -53,6 +53,7 @@
       type="file"
       @change="updatePhotoPreview"
     >
+    <el-tag type="warning" size="mini">提示：第一张图默认为产品缩略图</el-tag>
   </div>
 </template>
 <script>

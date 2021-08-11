@@ -102,11 +102,34 @@
         @current-change="handleCurrentChange"
       />
     </div>
+
+    <el-dialog
+      title="产品移动"
+      :visible.sync="dialogVisible"
+      width="30%"
+    >
+      <div style="margin-bottom:20px">
+        <el-cascader
+          ref="icascader"
+          v-model="value"
+          :options="options"
+          :props="{ value: 'id', label: 'name'}"
+          @change="handleChange"
+        />
+      </div>
+      <el-tag type="warning">{{ tempformName }} </el-tag>  转移到  <el-tag type="danger">{{ tempToName }}</el-tag>
+
+      <span slot="footer" class="dialog-footer">
+
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="handleMove">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { fetchList, deleteProductCate, updateShowStatus, updateNavStatus } from '@/api/productCate'
+import { fetchList, deleteProductCate, updateShowStatus, updateNavStatus, fetchListWithChildren, move } from '@/api/productCate'
 
 export default {
   name: 'ProductCateList',
@@ -135,7 +158,13 @@ export default {
         pageNum: 1,
         pageSize: 5
       },
-      parentId: 0
+      parentId: 0,
+      tempfromId: undefined,
+      tempformName: undefined,
+      tempToName: '',
+      dialogVisible: false,
+      options: [],
+      value: []
     }
   },
   watch: {
@@ -149,6 +178,21 @@ export default {
     this.getList()
   },
   methods: {
+    handleMove() {
+      const from = this.tempfromId
+      const to = this.value[1]
+      move({ from: from, to: to }).then(res => {
+        this.dialogVisible = false
+        this.$message({
+          message: '转移成功',
+          type: 'success'
+        })
+      })
+    },
+    handleChange(value) {
+      this.tempToName = this.$refs.icascader.getCheckedNodes()[0].data.name
+      // console.log(this.$refs.icascader.getCheckedNodes()[0].data.name)
+    },
     resetParentId() {
       this.listQuery.pageNum = 1
       if (this.$route.query.parentId != null) {
@@ -209,7 +253,17 @@ export default {
       this.$router.push({ path: '/pms/productCate', query: { parentId: row.id }})
     },
     handleTransferProduct(index, row) {
-      console.log('handleAddProductCate')
+      if (row.parentId === 0) {
+        this.$alert('需在二级分类操作转移。', '提示')
+      } else {
+        this.tempfromId = row.id
+        this.tempformName = row.name
+        this.dialogVisible = true
+        fetchListWithChildren().then(res => {
+          this.options = res.data
+          // console.log(res)
+        })
+      }
     },
     handleUpdate(index, row) {
       this.$router.push({ path: '/pms/updateProductCate', query: { id: row.id }})

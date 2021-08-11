@@ -58,3 +58,10 @@ export function fetchListWithChildren() {
     method: 'get'
   })
 }
+export function move(params) {
+  return request({
+    url: '/productCategory/move',
+    method: 'get',
+    params: params
+  })
+}

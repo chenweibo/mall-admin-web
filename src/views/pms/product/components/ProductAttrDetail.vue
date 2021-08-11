@@ -18,7 +18,8 @@
       <el-form-item label="商品规格：">
         <el-card shadow="never" class="cardBg">
           <div v-for="(productAttr,idx) in selectProductAttr" :key="idx">
-            {{ productAttr.name }}：<el-button type="text" @click="selectAll(idx)">全选</el-button>
+            {{ productAttr.name }}：<el-button type="text" style="margin-right:5px" @click="selectAll(idx)">全选</el-button>
+            <el-tag type="warning" size="mini">小提示：拖拽可排序</el-tag>
             <el-checkbox-group v-if="productAttr.handAddStatus===0" v-model="selectProductAttr[idx].values">
               <el-checkbox
                 v-for="item in getInputListArr(productAttr.inputList)"

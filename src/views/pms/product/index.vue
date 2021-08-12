@@ -603,6 +603,8 @@ export default {
         const ids = []
         ids.push(row.id)
         this.updateDeleteStatus(1, ids)
+        this.list.splice(index, 1)
+        // console.log(index, row)
       })
     },
     handleUpdateProduct(index, row) {
@@ -663,8 +665,8 @@ export default {
           type: 'success',
           duration: 1000
         })
+        this.getList()
       })
-      this.getList()
     }
   }
 }

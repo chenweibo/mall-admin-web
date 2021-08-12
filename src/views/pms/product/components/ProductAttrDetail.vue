@@ -1,7 +1,7 @@
 <template>
   <div style="margin-top: 50px">
-    <el-form ref="productAttrForm" :model="value" label-width="120px" size="small">
-      <el-form-item label="属性类型：">
+    <el-form ref="productAttrForm" :model="value" :rules="rules" label-width="120px" size="small">
+      <el-form-item label="属性类型：" prop="productAttributeCategoryId">
         <el-select
           v-model="value.productAttributeCategoryId"
           placeholder="请选择属性类型"
@@ -192,7 +192,7 @@
       </el-form-item>
       <el-form-item style="text-align: center">
         <el-button size="medium" @click="handlePrev">上一步，填写商品促销</el-button>
-        <el-button type="primary" size="medium" @click="handleNext">下一步，选择商品关联</el-button>
+        <el-button type="primary" size="medium" @click="handleNext('productAttrForm')">下一步，选择商品关联</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -240,7 +240,12 @@ export default {
       addProductAttrValue: '',
       // 商品富文本详情激活类型
       activeHtmlName: 'pc',
-      selectinput: undefined
+      selectinput: undefined,
+      rules: {
+
+        productAttributeCategoryId: [{ required: true, message: '请选择商品属性', trigger: 'blur' }]
+
+      }
     }
   },
   computed: {
@@ -729,10 +734,21 @@ export default {
     handlePrev() {
       this.$emit('prevStep')
     },
-    handleNext() {
-      this.mergeProductAttrValue()
-      // this.mergeProductAttrPics()
-      this.$emit('nextStep')
+    handleNext(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          this.mergeProductAttrValue()
+          // this.mergeProductAttrPics()
+          this.$emit('nextStep')
+        } else {
+          this.$message({
+            message: '验证失败',
+            type: 'error',
+            duration: 1000
+          })
+          return false
+        }
+      })
     }
   }
 }

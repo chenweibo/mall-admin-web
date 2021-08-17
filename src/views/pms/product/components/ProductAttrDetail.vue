@@ -177,9 +177,13 @@
           </div>
         </el-card>
       </el-form-item>
-      <el-form-item label="商品相册：">
-        <multi-upload v-model="selectProductPics" />
+      <el-form-item label="商品缩略图：">
+        <MUpload :url.sync="value.pic" />
       </el-form-item>
+      <el-form-item label="商品相册：">
+        <multi-upload v-model="ttzz" />
+      </el-form-item>
+
       <el-form-item label="规格参数：">
         <el-tabs v-model="activeHtmlName" type="card">
           <el-tab-pane label="电脑端详情" name="pc">
@@ -204,6 +208,7 @@ import { fetchList as fetchProductAttrList } from '@/api/productAttr'
 
 // import SingleUpload from '@/components/Upload/singleUpload'
 import MultiUpload from '@/components/Upload/multiUpload'
+import MUpload from '@/components/Upload/MUpload'
 import SkuUpload from '@/components/Upload/skuUpload'
 import Tinymce from '@/components/Tinymce'
 import _ from 'lodash'
@@ -211,13 +216,11 @@ import draggable from 'vuedraggable'
 
 export default {
   name: 'ProductAttrDetail',
-  components: { MultiUpload, Tinymce, SkuUpload, draggable },
+  components: { MultiUpload, Tinymce, SkuUpload, draggable, MUpload },
   props: {
     value: {
       type: Object,
-      default() {
-        return {}
-      }
+      default: () => ({})
     },
     isEdit: {
       type: Boolean,
@@ -239,6 +242,7 @@ export default {
       // 可手动添加的商品属性
       addProductAttrValue: '',
       // 商品富文本详情激活类型
+
       activeHtmlName: 'pc',
       selectinput: undefined,
       rules: {
@@ -264,6 +268,19 @@ export default {
     // 商品的编号
     productId() {
       return this.value.id
+    },
+    ttzz: {
+    // getter
+      get: function() {
+        if (this.value.albumPics) {
+          return this.value.albumPics.split(',')
+        }
+        return []
+      },
+      // setter
+      set: function(newValue) {
+        this.value.albumPics = newValue.join(',')
+      }
     },
     // 商品的主图和画册图片
     selectProductPics: {
@@ -738,7 +755,9 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           this.mergeProductAttrValue()
-          // this.mergeProductAttrPics()
+
+          this.value.albumPics = this.ttzz.join(',')
+
           this.$emit('nextStep')
         } else {
           this.$message({

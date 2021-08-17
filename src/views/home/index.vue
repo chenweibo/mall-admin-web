@@ -5,28 +5,28 @@
       <el-row :gutter="20">
         <el-col :span="6">
           <div class="total-frame">
-            <img :src="img_home_order" class="total-icon">
+            <i class="el-icon-goods" style="font-size:50px" />
             <div class="total-title">今日订单总数</div>
             <div class="total-value">200</div>
           </div>
         </el-col>
         <el-col :span="6">
           <div class="total-frame">
-            <img :src="img_home_today_amount" class="total-icon">
+            <i class="el-icon-notebook-1" style="font-size:50px" />
             <div class="total-title">今日销售总额</div>
             <div class="total-value">￥5000.00</div>
           </div>
         </el-col>
         <el-col :span="6">
           <div class="total-frame">
-            <img :src="img_home_yesterday_amount" class="total-icon">
+            <i class="el-icon-notebook-1" style="font-size:50px" />
             <div class="total-title">昨日销售总额</div>
             <div class="total-value">￥5000.00</div>
           </div>
         </el-col>
         <el-col :span="6">
           <div class="total-frame">
-            <img :src="img_home_yesterday_amount" class="total-icon">
+            <i class="el-icon-notebook-1" style="font-size:50px" />
             <div class="total-title">昨日销售总额</div>
             <div class="total-value">￥5000.00</div>
           </div>

@@ -10,6 +10,7 @@
       :on-success="handleUploadSuccess"
       :on-preview="handlePreview"
       :limit="maxCount"
+      multiple
       :on-exceed="handleExceed"
     >
       <i class="el-icon-plus" />
@@ -26,7 +27,6 @@
             <i class="el-icon-zoom-in" />
           </span>
           <span
-
             class="el-upload-list__item-edit"
             @click="handleEdit(file)"
           >
@@ -53,7 +53,9 @@
       type="file"
       @change="updatePhotoPreview"
     >
-    <el-tag type="warning" size="mini">提示：第一张图默认为产品缩略图</el-tag>
+    <!-- <el-tag type="warning" size="mini">提示：商品详情页内相册图组</el-tag>
+   -->
+
   </div>
 </template>
 <script>
@@ -86,6 +88,7 @@ export default {
         dir: '',
         host: ''
       },
+      q: [],
       editKey: undefined,
       dialogVisible: false,
       dialogImageUrl: null,
@@ -95,6 +98,7 @@ export default {
     }
   },
   computed: {
+
     fileList() {
       const fileList = []
       for (let i = 0; i < this.value.length; i++) {
@@ -103,6 +107,13 @@ export default {
       return fileList
     }
   },
+  watch: {
+
+  },
+  created() {
+
+  },
+  mounted() { },
   methods: {
     updatePhotoPreview(e) {
       const forms = new FormData()
@@ -111,6 +122,8 @@ export default {
       upload(forms)
         .then(response => {
           // this.url = response.data.url
+          // console.log(this.editKey)
+
           this.fileList[this.editKey].url = response.data.url
           this.emitInput(this.fileList)
           // this.fileList.splice(index, 1, { key: type, value: now })
@@ -121,25 +134,42 @@ export default {
     },
     emitInput(fileList) {
       const value = []
-      // console.log(fileList)
-      for (let i = 0; i < fileList.length; i++) {
-        value.push(fileList[i].url)
-      }
+      fileList.forEach(element => {
+        value.push(element.url)
+      })
+
       this.$emit('input', value)
     },
     handleEdit(file) {
-      const index = _.findIndex(this.fileList, file)
+      // console.log(file)
+      const b = _.findIndex(this.fileList, function(o) { return o.url === file.url })
       this.$refs.photo.click()
-      this.editKey = index
+      this.editKey = b
       // console.log(index)
     },
-    handleRemove(file, fileList) {
-      const index = _.findIndex(this.fileList, file)
-      if (index !== -1) {
-        // console.log(index)
-        this.fileList.splice(index, 1)
-        this.emitInput(this.fileList)
-      }
+    handleRemove(file) {
+      // console.log(file.url)
+      // const a = _.findIndex(this.value, function(o) { return o === file.url })
+      const b = _.findIndex(this.fileList, function(o) { return o.url === file.url })
+      // this.value.splice(a, 1)
+      this.fileList.splice(b, 1)
+      this.emitInput(this.fileList)
+      // if (file.response) {
+      //   const url = file.response.data.url
+      //   _.remove(this.fileList, function(item) {
+      //     return item.url === url
+      //   })
+      //   this.value =
+      //   this.emitInput(this.fileList)
+      //   // console.log(arr)
+      // }
+      // const index = _.findIndex(this.fileList, file)
+      // if (index !== -1) {
+      //   // console.log(index)
+      //   this.fileList.splice(index, 1)
+      //   console.log(this.fileList)
+      //   this.emitInput(this.fileList)
+      // }
 
       // this.emitInput(file)
     },
@@ -169,13 +199,14 @@ export default {
       })
     },
     handleUploadSuccess(res, file) {
-      let url = this.dataObj.host + '/' + this.dataObj.dir + '/' + file.name
-      if (!this.useOss) {
-        // 不使用oss直接获取图片路径
-        url = res.data.url
-      }
-      this.fileList.push({ name: file.name, url: url })
-      this.emitInput(this.fileList)
+      // console.log(res, file)
+      const url = res.data.url
+      // console.log(res)
+
+      this.fileList.push({ name: file.name, url: url, status: 'success' })
+      file.url = url
+      this.value.push(url)
+      // this.emitInput(this.fileList)
     },
     handleExceed(files, fileList) {
       this.$message({

@@ -121,12 +121,16 @@ export default {
   },
   created() {
     if (this.isEdit) {
-      getProduct(this.$route.query.id).then(response => {
-        this.productParam = response.data
-      })
+      this.getData()
     }
   },
   methods: {
+    async  getData() {
+      await getProduct(this.$route.query.id).then(response => {
+        this.productParam = response.data
+        // console.log(this.productParam)
+      })
+    },
     hideAll() {
       for (let i = 0; i < this.showStatus.length; i++) {
         this.showStatus[i] = false
